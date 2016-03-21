@@ -16,7 +16,7 @@ public class ImageLoader implements Runnable {
     WurstballData wData;
 
     public ImageLoader() {
-        wData = WurstballData.getWurstballData();
+        wData = WurstballData.getInstance();
     }
 
     @Override

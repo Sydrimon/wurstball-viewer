@@ -38,12 +38,12 @@ public class WurstballData {
      *
      * @return the only instance of {@link WurstballData WurstballData}
      */
-    public static WurstballData getWurstballData() {
+    public static WurstballData getInstance() {
         if (instance == null) {
             synchronized (WurstballData.class) {
                 if (instance == null) {
                     instance = new WurstballData();
-                }
+    }
             }
         }
         return instance;
