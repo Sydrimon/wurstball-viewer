@@ -27,7 +27,7 @@ public class WurstballData {
 
     public static int currentPicIndex;
 
-    private static WurstballData instance;
+    private static final WurstballData INSTANCE = new WurstballData();
 
     private WurstballData() {
         picBuffer = new ArrayBlockingQueue<>(PIC_BUFFER_MAX_SIZE, true);
@@ -39,14 +39,7 @@ public class WurstballData {
      * @return the only instance of {@link WurstballData WurstballData}
      */
     public static WurstballData getInstance() {
-        if (instance == null) {
-            synchronized (WurstballData.class) {
-                if (instance == null) {
-                    instance = new WurstballData();
-    }
-            }
-        }
-        return instance;
+        return INSTANCE;
     }
 
     /**
