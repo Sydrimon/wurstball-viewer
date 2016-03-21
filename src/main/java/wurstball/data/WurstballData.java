@@ -30,8 +30,8 @@ public class WurstballData {
     private static WurstballData instance;
 
     private WurstballData() {
-        picBuffer = new ArrayBlockingQueue(PIC_BUFFER_MAX_SIZE, true);
-        prevPics = new ArrayList(PREVIOUS_PIC_MAX);
+        picBuffer = new ArrayBlockingQueue<>(PIC_BUFFER_MAX_SIZE, true);
+        prevPics = new ArrayList<>(PREVIOUS_PIC_MAX);
     }
 
     /**
