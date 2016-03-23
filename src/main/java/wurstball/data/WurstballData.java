@@ -27,26 +27,19 @@ public class WurstballData {
 
     public static int currentPicIndex;
 
-    private static WurstballData instance;
+    private static final WurstballData INSTANCE = new WurstballData();
 
     private WurstballData() {
-        picBuffer = new ArrayBlockingQueue(PIC_BUFFER_MAX_SIZE, true);
-        prevPics = new ArrayList(PREVIOUS_PIC_MAX);
+        picBuffer = new ArrayBlockingQueue<>(PIC_BUFFER_MAX_SIZE, true);
+        prevPics = new ArrayList<>(PREVIOUS_PIC_MAX);
     }
 
     /**
      *
      * @return the only instance of {@link WurstballData WurstballData}
      */
-    public static WurstballData getWurstballData() {
-        if (instance == null) {
-            synchronized (WurstballData.class) {
-                if (instance == null) {
-                    instance = new WurstballData();
-                }
-            }
-        }
-        return instance;
+    public static WurstballData getInstance() {
+        return INSTANCE;
     }
 
     /**

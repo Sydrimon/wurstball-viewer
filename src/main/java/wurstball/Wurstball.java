@@ -4,7 +4,6 @@ import java.awt.Toolkit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
@@ -20,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import wurstball.data.PictureElement;
 import wurstball.data.WurstballData;
+import static javafx.application.Application.launch;
 
 /**
  *
@@ -53,7 +53,7 @@ public class Wurstball extends Application {
         primaryStage.setTitle("Wurstball-Viewer 2.0");
         primaryStage.setMaximized(true);
 
-        final WurstballData wData = WurstballData.getWurstballData();
+        final WurstballData wData = WurstballData.getInstance();
         currentPic = wData.getNextPic();
 
         // ImageView
