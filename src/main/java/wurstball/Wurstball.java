@@ -20,6 +20,8 @@ import javafx.stage.Stage;
 import wurstball.data.PictureElement;
 import wurstball.data.WurstballData;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
+import javafx.stage.WindowEvent;
 
 /**
  *
@@ -48,12 +50,16 @@ public class Wurstball extends Application {
     public static PictureElement currentPic;
     public static Clipboard clipboard = Clipboard.getSystemClipboard();
     public static PresentationMode presentation;
-    
+
     @Override
     public void start(Stage primaryStage) {
 
         primaryStage.setTitle("Wurstball-Viewer 2.0");
         primaryStage.setMaximized(true);
+        primaryStage.setOnCloseRequest((WindowEvent event) -> {
+            Platform.exit();
+            System.exit(0);
+        });
 
         final WurstballData wData = WurstballData.getInstance();
         currentPic = wData.getNextPic();
@@ -109,12 +115,12 @@ public class Wurstball extends Application {
                     changePic(IMAGE_VIEW, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
                     break;
                 case " ":
-                        if (presentation == null) {
-                            presentation = new PresentationMode();
-                            new Thread(presentation).start();
-                        } else {
-                            presentation.switchState();
-                        }
+                    if (presentation == null) {
+                        presentation = new PresentationMode();
+                        new Thread(presentation).start();
+                    } else {
+                        presentation.switchState();
+                    }
                     break;
                 default:
                     break;
