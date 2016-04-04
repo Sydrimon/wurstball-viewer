@@ -44,9 +44,11 @@ public class Wurstball extends Application {
     public static final int SCREEN_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
     public static final int SCREEN_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height;
 
+    public static final ImageView IMAGE_VIEW = new ImageView();
     public static PictureElement currentPic;
     public static Clipboard clipboard = Clipboard.getSystemClipboard();
-
+    public static PresentationMode presentation;
+    
     @Override
     public void start(Stage primaryStage) {
 
@@ -57,13 +59,12 @@ public class Wurstball extends Application {
         currentPic = wData.getNextPic();
 
         // ImageView
-        final ImageView imageView = new ImageView();
-        imageView.setPreserveRatio(true);
-        imageView.setSmooth(true);
-        imageView.setCache(true);
+        IMAGE_VIEW.setPreserveRatio(true);
+        IMAGE_VIEW.setSmooth(true);
+        IMAGE_VIEW.setCache(true);
 
         // StackPane
-        Pane stackP = new StackPane(imageView);
+        Pane stackP = new StackPane(IMAGE_VIEW);
         stackP.setStyle("-fx-background: rgb(0,0,0);");
 
         // ScrollPane
@@ -84,28 +85,36 @@ public class Wurstball extends Application {
         scrollP.setPrefViewportWidth(scene.getWidth() - 20);
         scrollP.setPrefViewportHeight(scene.getHeight() - 20);
 
-        changePic(imageView, currentPic.getImage(), scene.getWidth() - 20, scene.getHeight() - 20);
+        changePic(IMAGE_VIEW, currentPic.getImage(), scene.getWidth() - 20, scene.getHeight() - 20);
 
         scene.setOnKeyTyped((KeyEvent event) -> {
             switch (event.getCharacter()) {
                 case "r": // next random picture
                     currentPic = wData.getNextPic();
-                    changePic(imageView, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
+                    changePic(IMAGE_VIEW, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
                     break;
                 case "+": // zoom in
-                    if (imageView.getFitWidth() < imageView.getImage().getWidth() * 3) {
-                        imageView.setFitHeight(0);
-                        imageView.setFitWidth(imageView.getFitWidth() + 50);
+                    if (IMAGE_VIEW.getFitWidth() < IMAGE_VIEW.getImage().getWidth() * 3) {
+                        IMAGE_VIEW.setFitHeight(0);
+                        IMAGE_VIEW.setFitWidth(IMAGE_VIEW.getFitWidth() + 50);
                     }
                     break;
                 case "-": // zoom out
-                    if (imageView.getFitWidth() > 200) {
-                        imageView.setFitHeight(0);
-                        imageView.setFitWidth(imageView.getFitWidth() - 50);
+                    if (IMAGE_VIEW.getFitWidth() > 200) {
+                        IMAGE_VIEW.setFitHeight(0);
+                        IMAGE_VIEW.setFitWidth(IMAGE_VIEW.getFitWidth() - 50);
                     }
                     break;
                 case "m": //resets the size of the picture
-                    changePic(imageView, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
+                    changePic(IMAGE_VIEW, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
+                    break;
+                case " ":
+                        if (presentation == null) {
+                            presentation = new PresentationMode();
+                            new Thread(presentation).start();
+                        } else {
+                            presentation.switchState();
+                        }
                     break;
                 default:
                     break;
@@ -124,14 +133,14 @@ public class Wurstball extends Application {
                         newPictureElement = wData.getPreviousPic(true);
                         if (newPictureElement != null) {
                             currentPic = newPictureElement;
-                            changePic(imageView, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
+                            changePic(IMAGE_VIEW, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
                         }
                         break;
                     case RIGHT: // show next picture
                         newPictureElement = wData.getPreviousPic(false);
                         if (newPictureElement != null) {
                             currentPic = newPictureElement;
-                            changePic(imageView, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
+                            changePic(IMAGE_VIEW, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
                         }
                         break;
                     case C: // copy image url to clipboard
@@ -164,7 +173,7 @@ public class Wurstball extends Application {
                 scrollP.setPrefViewportWidth(scene.getWidth() - 20);
                 scrollP.setPrefViewportHeight(scene.getHeight() - 20);
 
-                changePic(imageView, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
+                changePic(IMAGE_VIEW, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
             }
         });
 
@@ -177,7 +186,7 @@ public class Wurstball extends Application {
                 scrollP.setPrefViewportWidth(scene.getWidth() - 20);
                 scrollP.setPrefViewportHeight(scene.getHeight() - 20);
 
-                changePic(imageView, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
+                changePic(IMAGE_VIEW, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
             }
         });
 
@@ -204,13 +213,22 @@ public class Wurstball extends Application {
     public static void changePic(ImageView view, Image image, double width, double height) {
         view.setImage(image);
         view.setFitHeight(0);
+        view.setFitWidth(0);
         if (image.getWidth() > width) {
             view.setFitWidth(width);
-        } else if (image.getHeight() > height && image.getHeight() < height + 150) {
+        }
+        if (image.getHeight() > height) {
             view.setFitWidth(0);
             view.setFitHeight(height);
-        } else {
-            view.setFitWidth(image.getWidth());
         }
+    }
+
+    /**
+     * Changes the Image of the ImageView and sets the size to fit the screen
+     *
+     * @param image
+     */
+    public static void changePic(Image image) {
+        changePic(IMAGE_VIEW, image, SCREEN_WIDTH, SCREEN_HEIGHT);
     }
 }
