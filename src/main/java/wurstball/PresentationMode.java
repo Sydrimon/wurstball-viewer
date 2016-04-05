@@ -32,7 +32,7 @@ public class PresentationMode implements Runnable {
         }
     }
 
-    public void stop() {
+    public void pause() {
         this.run = false;
     }
 

@@ -22,6 +22,7 @@ import wurstball.data.WurstballData;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
 import javafx.stage.WindowEvent;
+import static javafx.application.Application.launch;
 
 /**
  *
@@ -98,17 +99,20 @@ public class Wurstball extends Application {
                 case "r": // next random picture
                     currentPic = wData.getNextPic();
                     changePic(IMAGE_VIEW, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
+                    presentation.pause();
                     break;
                 case "+": // zoom in
                     if (IMAGE_VIEW.getFitWidth() < IMAGE_VIEW.getImage().getWidth() * 3) {
                         IMAGE_VIEW.setFitHeight(0);
                         IMAGE_VIEW.setFitWidth(IMAGE_VIEW.getFitWidth() + 50);
+                        presentation.pause();
                     }
                     break;
                 case "-": // zoom out
                     if (IMAGE_VIEW.getFitWidth() > 200) {
                         IMAGE_VIEW.setFitHeight(0);
                         IMAGE_VIEW.setFitWidth(IMAGE_VIEW.getFitWidth() - 50);
+                        presentation.pause();
                     }
                     break;
                 case "m": //resets the size of the picture
@@ -132,12 +136,14 @@ public class Wurstball extends Application {
                 PictureElement newPictureElement;
                 switch (event.getCode()) {
                     case S: // save picture as a file
+                        presentation.pause();
                         LOGGER.log(Level.INFO, "Calling savePic");
                         currentPic.savePic();
                         break;
                     case LEFT: // show previous picture
                         newPictureElement = wData.getPreviousPic(true);
                         if (newPictureElement != null) {
+                            presentation.pause();
                             currentPic = newPictureElement;
                             changePic(IMAGE_VIEW, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
                         }
