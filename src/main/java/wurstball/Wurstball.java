@@ -29,8 +29,6 @@ public class Wurstball extends Application {
 
     private static final Logger LOGGER = Logger.getLogger(Wurstball.class.getName());
 
-    public static final int MAX_RETRIES = 4;
-
     /**
      * the address of the site to get the picture from
      */
