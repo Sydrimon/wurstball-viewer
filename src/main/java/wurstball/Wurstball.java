@@ -4,7 +4,6 @@ import java.awt.Toolkit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -127,7 +126,8 @@ public class Wurstball extends Application {
                     } else {
                         future = EXECUTOR.scheduleAtFixedRate(() -> {
                             Wurstball.changePic(wData.getNextPic().getImage());
-                        }, 0, 2, TimeUnit.SECONDS);
+                        }, 0, wData.getConfig().getPresentationSpeedValue(),
+                                wData.getConfig().getPresentaionSpeedUnit());
                     }
                     break;
                 default:
