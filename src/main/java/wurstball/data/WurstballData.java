@@ -25,11 +25,12 @@ public class WurstballData {
     public static int currentPicIndex;
 
     private static final WurstballData INSTANCE = new WurstballData();
-    private static final ConfigData CONFIG = ConfigData.getInstance();;
+    private static ConfigData config;
     
     private WurstballData() {
-        picBuffer = new ArrayBlockingQueue<>(CONFIG.getPicBufferSize(), true);
-        prevPics = new ArrayList<>(CONFIG.getPreviousPicMax());
+        config = ConfigData.getInstance();
+        picBuffer = new ArrayBlockingQueue<>(config.getPicBufferSize(), true);
+        prevPics = new ArrayList<>(config.getPreviousPicMax());
     }
 
     /**
@@ -41,7 +42,7 @@ public class WurstballData {
     }
 
     public ConfigData getConfig() {
-        return CONFIG;
+        return config;
     }
     
     /**
@@ -51,7 +52,7 @@ public class WurstballData {
      * @return URL of the picture
      */
     public String getPicUrl() {
-        for (int i = 0; i < CONFIG.getMaxRetries(); i++) {
+        for (int i = 0; i < config.getMaxRetries(); i++) {
             try {
                 Document doc = Jsoup.connect(ADDRESS).get();
                 Element content = doc.select(PIC_TAG).first();
@@ -75,10 +76,10 @@ public class WurstballData {
      * the buffer
      */
     public PictureElement getNextPic() {
-        for (int i = 0; i < CONFIG.getPicBufferSize() - picBuffer.size(); i++) {
+        for (int i = 0; i < config.getPicBufferSize() - picBuffer.size(); i++) {
             new Thread(new ImageLoader()).start();
         }
-        for (int i = 0; i < CONFIG.getMaxRetries(); i++) {
+        for (int i = 0; i < config.getMaxRetries(); i++) {
             try {
                 PictureElement pic = picBuffer.take();
                 addPreviousPic(pic);
@@ -99,7 +100,7 @@ public class WurstballData {
      * @param image the picture to add to the list of the previous pictures
      */
     public void addPreviousPic(PictureElement image) {
-        if (prevPics.size() < CONFIG.getPreviousPicMax()) {
+        if (prevPics.size() < config.getPreviousPicMax()) {
             prevPics.add(image);
         } else {
             prevPics.remove(0);
