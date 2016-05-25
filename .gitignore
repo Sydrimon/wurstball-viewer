@@ -3,3 +3,5 @@ dist/*
 nbproject/private/*
 /nbproject/
 /target/
+.intellij/*
+*.iml

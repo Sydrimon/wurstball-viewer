@@ -51,11 +51,12 @@ public class Wurstball extends Application {
     public static final ImageView IMAGE_VIEW = new ImageView();
 
     public static PictureElement currentPic;
-    public static Clipboard clipboard = Clipboard.getSystemClipboard();
+    public static Clipboard clipboard ;
     private ScheduledFuture<?> future;
 
     @Override
     public void start(Stage primaryStage) {
+        clipboard = Clipboard.getSystemClipboard();
 
         primaryStage.setTitle("Wurstball-Viewer 2.0");
         primaryStage.setMaximized(true);
