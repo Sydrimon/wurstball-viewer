@@ -1,6 +1,7 @@
 package wurstball.data;
 
 import com.google.gson.Gson;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.util.logging.Logger;
  * @author simon
  */
 public class ConfigIO {
-
+    private static final Logger LOGGER = Logger.getLogger(ConfigData.class.getName());
     private static final String CONFIG_PATH = System.getProperty("user.home") + "/.wurstball.config";
 
     public static ConfigData readConfigData() throws IOException {
@@ -28,15 +29,18 @@ public class ConfigIO {
             Gson gson = new Gson();
             String jsonString = gson.toJson(data);
             configWriter.write(jsonString);
-            Logger.getLogger(ConfigData.class.getName()).log(Level.FINER, "jsonString={0}", jsonString);
+            LOGGER.log(Level.FINER, "jsonString={0}", jsonString);
         }
     }
     
     public static ConfigData loadOrDefault() {
         try {
             return readConfigData();
+        } catch (FileNotFoundException ex ) {
+            LOGGER.log(Level.INFO, "Config file not found - using defaults ({0})", 
+                                        ex.getLocalizedMessage());
         } catch (IOException e) {
-            Logger.getLogger(ConfigData.class.getName()).log(Level.SEVERE, "Failed reading the config file", e);
+            LOGGER.log(Level.SEVERE, "Failed reading the config file", e);
         }
         return new ConfigData();
     }
