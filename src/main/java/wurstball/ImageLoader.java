@@ -2,7 +2,6 @@ package wurstball;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static wurstball.Wurstball.MAX_RETRIES;
 import wurstball.data.PictureElement;
 import wurstball.data.WurstballData;
 
@@ -21,7 +20,7 @@ public class ImageLoader implements Runnable {
 
     @Override
     public void run() {
-        for (int i = 0; i < MAX_RETRIES; i++) {
+        for (int i = 0; i < wData.getConfig().getMaxRetries(); i++) {
             try {
                 wData.picBuffer.put(new PictureElement(wData.getPicUrl()));
                 break;

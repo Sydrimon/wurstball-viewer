@@ -10,7 +10,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import wurstball.ImageLoader;
 import static wurstball.Wurstball.ADDRESS;
-import static wurstball.Wurstball.MAX_RETRIES;
 import static wurstball.Wurstball.PIC_TAG;
 
 /**
@@ -19,19 +18,19 @@ import static wurstball.Wurstball.PIC_TAG;
  */
 public class WurstballData {
 
-    public static final int PREVIOUS_PIC_MAX = 10;
-    public static final int PIC_BUFFER_MAX_SIZE = 5;
-
     public final ArrayBlockingQueue<PictureElement> picBuffer;
     public final ArrayList<PictureElement> prevPics;
 
+    
     public static int currentPicIndex;
 
     private static final WurstballData INSTANCE = new WurstballData();
-
+    private static ConfigData config;
+    
     private WurstballData() {
-        picBuffer = new ArrayBlockingQueue<>(PIC_BUFFER_MAX_SIZE, true);
-        prevPics = new ArrayList<>(PREVIOUS_PIC_MAX);
+        config = ConfigData.getInstance();
+        picBuffer = new ArrayBlockingQueue<>(config.getPicBufferSize(), true);
+        prevPics = new ArrayList<>(config.getPreviousPicMax());
     }
 
     /**
@@ -42,6 +41,10 @@ public class WurstballData {
         return INSTANCE;
     }
 
+    public ConfigData getConfig() {
+        return config;
+    }
+    
     /**
      * returns the URL of the picture from {@link #ADDRESS ADDRESS} with the tag
      * {@link #PIC_TAG PIC_TAG}
@@ -49,7 +52,7 @@ public class WurstballData {
      * @return URL of the picture
      */
     public String getPicUrl() {
-        for (int i = 0; i < MAX_RETRIES; i++) {
+        for (int i = 0; i < config.getMaxRetries(); i++) {
             try {
                 Document doc = Jsoup.connect(ADDRESS).get();
                 Element content = doc.select(PIC_TAG).first();
@@ -73,10 +76,10 @@ public class WurstballData {
      * the buffer
      */
     public PictureElement getNextPic() {
-        for (int i = 0; i < PIC_BUFFER_MAX_SIZE - picBuffer.size(); i++) {
+        for (int i = 0; i < config.getPicBufferSize() - picBuffer.size(); i++) {
             new Thread(new ImageLoader()).start();
         }
-        for (int i = 0; i < MAX_RETRIES; i++) {
+        for (int i = 0; i < config.getMaxRetries(); i++) {
             try {
                 PictureElement pic = picBuffer.take();
                 addPreviousPic(pic);
@@ -97,7 +100,7 @@ public class WurstballData {
      * @param image the picture to add to the list of the previous pictures
      */
     public void addPreviousPic(PictureElement image) {
-        if (prevPics.size() < PREVIOUS_PIC_MAX) {
+        if (prevPics.size() < config.getPreviousPicMax()) {
             prevPics.add(image);
         } else {
             prevPics.remove(0);

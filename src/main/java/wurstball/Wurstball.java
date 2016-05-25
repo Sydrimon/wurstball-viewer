@@ -4,7 +4,6 @@ import java.awt.Toolkit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -35,8 +34,6 @@ public class Wurstball extends Application {
 
     private static final Logger LOGGER = Logger.getLogger(Wurstball.class.getName());
 
-    public static final int MAX_RETRIES = 4;
-
     /**
      * the address of the site to get the picture from
      */
@@ -54,11 +51,12 @@ public class Wurstball extends Application {
     public static final ImageView IMAGE_VIEW = new ImageView();
 
     public static PictureElement currentPic;
-    public static Clipboard clipboard = Clipboard.getSystemClipboard();
+    public static Clipboard clipboard ;
     private ScheduledFuture<?> future;
 
     @Override
     public void start(Stage primaryStage) {
+        clipboard = Clipboard.getSystemClipboard();
 
         primaryStage.setTitle("Wurstball-Viewer 2.0");
         primaryStage.setMaximized(true);
@@ -129,7 +127,8 @@ public class Wurstball extends Application {
                     } else {
                         future = EXECUTOR.scheduleAtFixedRate(() -> {
                             Wurstball.changePic(wData.getNextPic().getImage());
-                        }, 0, 2, TimeUnit.SECONDS);
+                        }, 0, wData.getConfig().getPresentationSpeedValue(),
+                                wData.getConfig().getPresentaionSpeedUnit());
                     }
                     break;
                 default:
