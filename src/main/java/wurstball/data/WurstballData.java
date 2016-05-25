@@ -3,12 +3,14 @@ package wurstball.data;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ScheduledFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import wurstball.ImageLoader;
+import wurstball.Wurstball;
 import static wurstball.Wurstball.ADDRESS;
 import static wurstball.Wurstball.MAX_RETRIES;
 import static wurstball.Wurstball.PIC_TAG;
@@ -25,7 +27,7 @@ public class WurstballData {
     public final ArrayBlockingQueue<PictureElement> picBuffer;
     public final ArrayList<PictureElement> prevPics;
 
-    public static int currentPicIndex;
+    private int currentPicIndex;
 
     private static final WurstballData INSTANCE = new WurstballData();
 
@@ -74,7 +76,7 @@ public class WurstballData {
      */
     public PictureElement getNextPic() {
         for (int i = 0; i < PIC_BUFFER_MAX_SIZE - picBuffer.size(); i++) {
-            new Thread(new ImageLoader()).start();
+            Wurstball.EXECUTOR.execute(new ImageLoader());
         }
         for (int i = 0; i < MAX_RETRIES; i++) {
             try {

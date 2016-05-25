@@ -13,17 +13,11 @@ import wurstball.data.WurstballData;
  */
 public class ImageLoader implements Runnable {
 
-    WurstballData wData;
-
-    public ImageLoader() {
-        wData = WurstballData.getInstance();
-    }
-
     @Override
     public void run() {
         for (int i = 0; i < MAX_RETRIES; i++) {
             try {
-                wData.picBuffer.put(new PictureElement(wData.getPicUrl()));
+                WurstballData.getInstance().picBuffer.put(new PictureElement(WurstballData.getInstance().getPicUrl()));
                 break;
             } catch (InterruptedException ex) {
                 Logger.getLogger(ImageLoader.class.getName()).log(Level.SEVERE,

@@ -50,7 +50,7 @@ public class Wurstball extends Application {
     public static final int SCREEN_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
     public static final int SCREEN_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height;
 
-    public static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
+    public static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(8);
     public static final ImageView IMAGE_VIEW = new ImageView();
 
     public static PictureElement currentPic;
