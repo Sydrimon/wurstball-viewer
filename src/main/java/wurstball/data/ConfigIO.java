@@ -1,6 +1,7 @@
 package wurstball.data;
 
 import com.google.gson.Gson;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,6 +36,8 @@ public class ConfigIO {
     public static ConfigData loadOrDefault() {
         try {
             return readConfigData();
+        } catch (FileNotFoundException ex ) {
+            Logger.getLogger(ConfigData.class.getName()).log(Level.INFO, "Config file not found - using defaults ({0})", ex.getLocalizedMessage());
         } catch (IOException e) {
             Logger.getLogger(ConfigData.class.getName()).log(Level.SEVERE, "Failed reading the config file", e);
         }
