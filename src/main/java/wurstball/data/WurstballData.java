@@ -3,14 +3,12 @@ package wurstball.data;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ScheduledFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import wurstball.ImageLoader;
-import wurstball.Wurstball;
 import static wurstball.Wurstball.ADDRESS;
 import static wurstball.Wurstball.MAX_RETRIES;
 import static wurstball.Wurstball.PIC_TAG;
@@ -20,6 +18,8 @@ import static wurstball.Wurstball.PIC_TAG;
  * @author Sydrimon
  */
 public class WurstballData {
+
+    private static final Logger LOGGER = Logger.getLogger(WurstballData.class.getName());
 
     public static final int PREVIOUS_PIC_MAX = 10;
     public static final int PIC_BUFFER_MAX_SIZE = 5;
@@ -34,6 +34,7 @@ public class WurstballData {
     private WurstballData() {
         picBuffer = new ArrayBlockingQueue<>(PIC_BUFFER_MAX_SIZE, true);
         prevPics = new ArrayList<>(PREVIOUS_PIC_MAX);
+        fillBuffer();
     }
 
     /**
@@ -57,11 +58,9 @@ public class WurstballData {
                 Element content = doc.select(PIC_TAG).first();
 
                 String picURL = content.absUrl("src");
-                Logger.getLogger(WurstballData.class.getName()).info(picURL);
                 return picURL;
             } catch (IOException e) {
-                Logger.getLogger(WurstballData.class.getName()).log(Level.WARNING,
-                        "Bild nicht gefunden. Versuch: " + (i + 1), e);
+                LOGGER.log(Level.WARNING, "Bild nicht gefunden. Versuch: " + (i + 1), e);
             }
         }
         return null;
@@ -75,20 +74,26 @@ public class WurstballData {
      * the buffer
      */
     public PictureElement getNextPic() {
-        for (int i = 0; i < PIC_BUFFER_MAX_SIZE - picBuffer.size(); i++) {
-            Wurstball.EXECUTOR.execute(new ImageLoader());
-        }
         for (int i = 0; i < MAX_RETRIES; i++) {
             try {
                 PictureElement pic = picBuffer.take();
                 addPreviousPic(pic);
                 return pic;
             } catch (InterruptedException ex) {
-                Logger.getLogger(WurstballData.class.getName()).log(Level.SEVERE,
-                        "Interrupted on waiting for pictures", ex);
+                LOGGER.log(Level.SEVERE, "Interrupted on waiting for pictures", ex);
             }
         }
         return null;
+    }
+
+    /**
+     * fills the picture buffer with
+     * {@link wurstball.data.PictureElement PictureElements}
+     */
+    private void fillBuffer() {
+        for (int i = 0; i < ImageLoader.THREAD_POOL_SIZE; i++) {
+            ImageLoader.EXECUTOR.execute(new ImageLoader());
+        }
     }
 
     /**

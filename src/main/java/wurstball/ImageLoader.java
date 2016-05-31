@@ -1,8 +1,7 @@
 package wurstball;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import static wurstball.Wurstball.MAX_RETRIES;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import wurstball.data.PictureElement;
 import wurstball.data.WurstballData;
 
@@ -13,15 +12,16 @@ import wurstball.data.WurstballData;
  */
 public class ImageLoader implements Runnable {
 
+    public static final int THREAD_POOL_SIZE = 8;
+    public static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(THREAD_POOL_SIZE);
+    
     @Override
     public void run() {
-        for (int i = 0; i < MAX_RETRIES; i++) {
+        while (true) {
             try {
                 WurstballData.getInstance().picBuffer.put(new PictureElement(WurstballData.getInstance().getPicUrl()));
-                break;
             } catch (InterruptedException ex) {
-                Logger.getLogger(ImageLoader.class.getName()).log(Level.SEVERE,
-                        "Failed to load image at try " + (i + 1), ex);
+                return;
             }
         }
     }

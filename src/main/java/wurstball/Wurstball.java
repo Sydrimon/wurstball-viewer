@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
@@ -50,7 +49,7 @@ public class Wurstball extends Application {
     public static final int SCREEN_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
     public static final int SCREEN_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height;
 
-    public static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(8);
+    public static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
     public static final ImageView IMAGE_VIEW = new ImageView();
 
     public static PictureElement currentPic;
@@ -63,10 +62,12 @@ public class Wurstball extends Application {
         primaryStage.setTitle("Wurstball-Viewer 2.0");
         primaryStage.setMaximized(true);
         primaryStage.setOnCloseRequest((WindowEvent event) -> {
-            Platform.exit();
-            System.exit(0);
+            ImageLoader.EXECUTOR.shutdownNow();
         });
-
+        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(800);
+        primaryStage.setFullScreen(true);
+        
         final WurstballData wData = WurstballData.getInstance();
         currentPic = wData.getNextPic();
 
@@ -101,36 +102,20 @@ public class Wurstball extends Application {
 
         scene.setOnKeyTyped((KeyEvent event) -> {
             switch (event.getCharacter().toLowerCase()) {
-                case "r": // next random picture
-                    currentPic = wData.getNextPic();
-                    changePic(IMAGE_VIEW, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
-                    pausePresentation();
+                case "r":
+                    randomPicture();
                     break;
-                case "+": // zoom in
-                    if (IMAGE_VIEW.getFitWidth() < IMAGE_VIEW.getImage().getWidth() * 3) {
-                        IMAGE_VIEW.setFitHeight(0);
-                        IMAGE_VIEW.setFitWidth(IMAGE_VIEW.getFitWidth() + 50);
-                        pausePresentation();
-                    }
+                case "+":
+                    rescaleUp();
                     break;
-                case "-": // zoom out
-                    if (IMAGE_VIEW.getFitWidth() > 200) {
-                        IMAGE_VIEW.setFitHeight(0);
-                        IMAGE_VIEW.setFitWidth(IMAGE_VIEW.getFitWidth() - 50);
-                        pausePresentation();
-                    }
+                case "-":
+                    rescaleDown();
                     break;
                 case "m": //resets the size of the picture
-                    changePic(IMAGE_VIEW, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
+                    changePic(currentPic.getImage());
                     break;
                 case " ":
-                    if (future != null && !future.isCancelled()) {
-                        pausePresentation();
-                    } else {
-                        future = EXECUTOR.scheduleAtFixedRate(() -> {
-                            Wurstball.changePic(wData.getNextPic().getImage());
-                        }, 0, 2, TimeUnit.SECONDS);
-                    }
+                    togglePresentationMode();
                     break;
                 default:
                     break;
@@ -139,36 +124,21 @@ public class Wurstball extends Application {
 
         scene.setOnKeyPressed((KeyEvent event) -> {
             if (event.isControlDown()) {
-                PictureElement newPictureElement;
                 switch (event.getCode()) {
-                    case S: // save picture as a file
-                        pausePresentation();
-                        LOGGER.log(Level.INFO, "Calling savePic");
-                        currentPic.savePic();
+                    case S:
+                        savePictureToFile();
                         break;
-                    case LEFT: // show previous picture
-                        newPictureElement = wData.getPreviousPic(true);
-                        if (newPictureElement != null) {
-                            pausePresentation();
-                            currentPic = newPictureElement;
-                            changePic(IMAGE_VIEW, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
-                        }
+                    case LEFT:
+                        showPreviousPicture();
                         break;
-                    case RIGHT: // show next picture
-                        newPictureElement = wData.getPreviousPic(false);
-                        if (newPictureElement != null) {
-                            currentPic = newPictureElement;
-                            changePic(IMAGE_VIEW, currentPic.getImage(), stackP.getWidth(), stackP.getHeight());
-                        }
+                    case RIGHT:
+                        showNextPicture();
                         break;
-                    case C: // copy image url to clipboard
-                        LOGGER.info("Copy url to clipboard");
-                        ClipboardContent content = new ClipboardContent();
-                        content.putString(currentPic.getImageURL());
-                        clipboard.setContent(content);
+                    case C:
+                        copyPictureUrl();
                         break;
-                    case F: // switch to full screen mode
-                        primaryStage.setFullScreen(!primaryStage.isFullScreen());
+                    case F:
+                        toggleFullscreen(primaryStage);
                         break;
                     default:
                         break;
@@ -208,6 +178,110 @@ public class Wurstball extends Application {
     }
 
     /**
+     * shows the next reandom picture
+     */
+    private void randomPicture() {
+        currentPic = WurstballData.getInstance().getNextPic();
+        changePic(currentPic.getImage());
+        pausePresentation();
+    }
+
+    /**
+     * rescales the current picture up
+     */
+    private void rescaleUp() {
+        pausePresentation();
+        if (IMAGE_VIEW.getFitWidth() < IMAGE_VIEW.getImage().getWidth() * 3) {
+            if (IMAGE_VIEW.getFitWidth() == 0) {
+                IMAGE_VIEW.setFitWidth(currentPic.getImage().getWidth());
+            }
+            IMAGE_VIEW.setFitHeight(0);
+            IMAGE_VIEW.setFitWidth(IMAGE_VIEW.getFitWidth() + 50);
+        }
+    }
+
+    /**
+     * rescales the current picture down
+     */
+    private void rescaleDown() {
+        pausePresentation();
+        if (IMAGE_VIEW.getFitWidth() > 200) {
+            if (IMAGE_VIEW.getFitWidth() == 0) {
+                IMAGE_VIEW.setFitWidth(currentPic.getImage().getWidth());
+            }
+            IMAGE_VIEW.setFitHeight(0);
+            IMAGE_VIEW.setFitWidth(IMAGE_VIEW.getFitWidth() - 50);
+        }
+    }
+
+    /**
+     * toggles presentation mode
+     */
+    private void togglePresentationMode() {
+        if (future != null && !future.isCancelled()) {
+            pausePresentation();
+        } else {
+            future = EXECUTOR.scheduleAtFixedRate(() -> {
+                Wurstball.changePic(WurstballData.getInstance().getNextPic().getImage());
+            }, 0, 2, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * toggles fullscreen mode
+     * @param primaryStage 
+     */
+    private void toggleFullscreen(Stage primaryStage) {
+        primaryStage.setFullScreen(!primaryStage.isFullScreen());
+    }
+
+    /**
+     * save current picture to file
+     */
+    private void savePictureToFile() {
+        // save picture as a file
+        pausePresentation();
+        LOGGER.log(Level.INFO, "Calling savePic");
+        currentPic.savePic();
+    }
+
+    /**
+     * copys the URL of the current picture to the clipboard
+     */
+    private void copyPictureUrl() {
+        LOGGER.info("Copy url to clipboard");
+        ClipboardContent content = new ClipboardContent();
+        content.putString(currentPic.getImageURL());
+        clipboard.setContent(content);
+    }
+
+    /**
+     * sets the next picture of the previous viewed pictures as current picture
+     */
+    private void showNextPicture() {
+        PictureElement newPictureElement;
+        newPictureElement = WurstballData.getInstance().getPreviousPic(false);
+        if (newPictureElement != null) {
+            currentPic = newPictureElement;
+            changePic(currentPic.getImage());
+        }
+    }
+
+    /**
+     * sets the previous picture of the previous viewed pictures as current
+     * picture
+     */
+    private void showPreviousPicture() {
+        PictureElement newPictureElement;
+        newPictureElement = WurstballData.getInstance().getPreviousPic(true);
+        if (newPictureElement != null) {
+            pausePresentation();
+            currentPic = newPictureElement;
+            changePic(currentPic.getImage());
+        }
+    }
+
+    /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
@@ -230,7 +304,6 @@ public class Wurstball extends Application {
             view.setFitWidth(width);
         }
         if (image.getHeight() > height) {
-            view.setFitWidth(0);
             view.setFitHeight(height);
         }
     }
@@ -241,9 +314,12 @@ public class Wurstball extends Application {
      * @param image
      */
     public static void changePic(Image image) {
-        changePic(IMAGE_VIEW, image, SCREEN_WIDTH, SCREEN_HEIGHT);
+        changePic(IMAGE_VIEW, image, (SCREEN_WIDTH -SCREEN_WIDTH * 0.01), (SCREEN_HEIGHT - SCREEN_HEIGHT* 0.01));
     }
 
+    /**
+     * pauses the presentatiom mode
+     */
     private void pausePresentation() {
         if (future != null && !future.isCancelled()) {
             future.cancel(false);
