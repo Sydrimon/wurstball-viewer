@@ -1,6 +1,6 @@
 # wurstball-viewer
 
-[![Build Status](https://travis-ci.org/Sydrimon/wurstball-viewer.svg?branch=config)](https://travis-ci.org/Sydrimon/wurstball-viewer)
+[![Build Status](https://travis-ci.org/Sydrimon/wurstball-viewer.svg?branch=master)](https://travis-ci.org/Sydrimon/wurstball-viewer)
 
 Controls:
 

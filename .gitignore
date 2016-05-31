@@ -3,5 +3,6 @@ dist/*
 nbproject/private/*
 /nbproject/
 /target/
+nbactions.xml
 .intellij/*
 *.iml
