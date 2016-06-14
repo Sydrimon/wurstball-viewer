@@ -46,8 +46,8 @@ public class WurstballData {
     }
 
     /**
-     * returns the URL of the picture from {@link #ADDRESS ADDRESS} with the tag
-     * {@link #PIC_TAG PIC_TAG}
+     * returns the URL of the picture from {@link wurstball.Wurstball#ADDRESS ADDRESS} with the tag
+     * {@link wurstball.Wurstball#PIC_TAG PIC_TAG}
      *
      * @return URL of the picture
      */
