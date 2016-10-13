@@ -50,7 +50,7 @@ public class WurstballViewerController implements Initializable {
         switch(pressed){
             case R : randomPicture();
                 break;
-            case M : fitSizeOfImageContainer();
+            case M : resetImageScale();
                 break;
             case SPACE: togglePresentationMode();
                 break;
@@ -98,7 +98,7 @@ public class WurstballViewerController implements Initializable {
     }
 
     private void fitSizeOfImageContainer() {
-        //Match the height and width todo not working
+        //Match the height and width
         Scene scene = imagecontainer.getScene();
         if(scene != null){
             imagecontainer.fitWidthProperty().bind(maincontainer.widthProperty().subtract(OUTER_PADDING));

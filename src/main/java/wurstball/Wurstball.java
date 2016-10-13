@@ -34,7 +34,7 @@ public class Wurstball extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        ScrollPane root =  FXMLLoader.load(getClass().getResource("ui/wurstballviewer.fxml"));
+        ScrollPane root =  FXMLLoader.load(getClass().getResource("/wurstballviewer.fxml"));
 
         // Set Scene
         Scene scene = new Scene(root);
