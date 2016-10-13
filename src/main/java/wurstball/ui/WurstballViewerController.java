@@ -9,6 +9,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import wurstball.Wurstball;
 import wurstball.data.PictureElement;
@@ -92,12 +93,12 @@ public class WurstballViewerController implements Initializable {
         fitSizeOfImageContainer();
     }
 
-    private void resetImageScale() {
+    public void resetImageScale() {
         imagecontainer.setScaleX(1.0);
         imagecontainer.setScaleY(1.0);
     }
 
-    private void fitSizeOfImageContainer() {
+    public void fitSizeOfImageContainer() {
         //Match the height and width
         Scene scene = imagecontainer.getScene();
         if(scene != null){
@@ -109,7 +110,7 @@ public class WurstballViewerController implements Initializable {
     /**
      * shows the next reandom picture
      */
-    private void randomPicture() {
+    public void randomPicture() {
         currentPic = WurstballData.getInstance().getNextPic();
         setCurrentImage();
         pausePresentation();
@@ -119,7 +120,7 @@ public class WurstballViewerController implements Initializable {
     /**
      * rescales the current picture up
      */
-    private void rescaleUp() {
+    public void rescaleUp() {
         //todo
        //pausePresentation();
         scaleImage(2.0);
@@ -133,7 +134,7 @@ public class WurstballViewerController implements Initializable {
     /**
      * rescales the current picture down
      */
-    private void rescaleDown() {
+    public void rescaleDown() {
         //todo
 //        pausePresentation();
         scaleImage(0.5);
@@ -142,7 +143,7 @@ public class WurstballViewerController implements Initializable {
     /**
      * toggles presentation mode
      */
-    private void togglePresentationMode() {
+    public void togglePresentationMode() {
         //todo
 //        if (future != null && !future.isCancelled()) {
 //            pausePresentation();
@@ -156,7 +157,7 @@ public class WurstballViewerController implements Initializable {
     /**
      * toggles fullscreen mode
      */
-    private void toggleFullscreen() {
+    public void toggleFullscreen() {
         Stage stage = (Stage) maincontainer.getScene().getWindow();
         stage.setFullScreen(true);
     }
@@ -164,7 +165,7 @@ public class WurstballViewerController implements Initializable {
     /**
      * save current picture to file
      */
-    private void savePictureToFile() {
+    public void savePictureToFile() {
         // save picture as a file
         pausePresentation();
         LOGGER.log(Level.INFO, "Calling savePic");
@@ -174,7 +175,7 @@ public class WurstballViewerController implements Initializable {
     /**
      * copys the URL of the current picture to the clipboard
      */
-    private void copyPictureUrl() {
+    public void copyPictureUrl() {
         LOGGER.info("Copy url to clipboard");
         ClipboardContent content = new ClipboardContent();
         content.putString(currentPic.getImageURL());
@@ -184,7 +185,7 @@ public class WurstballViewerController implements Initializable {
     /**
      * sets the next picture of the previous viewed pictures as current picture
      */
-    private void showNextPicture() {
+    public void showNextPicture() {
         currentPic= wurstballData.getNextPic();
         setCurrentImage();
     }
@@ -193,7 +194,7 @@ public class WurstballViewerController implements Initializable {
      * sets the previous picture of the previous viewed pictures as current
      * picture
      */
-    private void showPreviousPicture() {
+    public void showPreviousPicture() {
         currentPic= wurstballData.getPreviousPic(true); //todo not working correct
         setCurrentImage();
     }
@@ -201,7 +202,7 @@ public class WurstballViewerController implements Initializable {
     /**
      * pauses the presentatiom mode
      */
-    private void pausePresentation() {
+    public void pausePresentation() {
         //todo
 //        if (future != null && !future.isCancelled()) {
 //            future.cancel(false);
