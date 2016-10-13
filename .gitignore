@@ -7,3 +7,4 @@ nbactions.xml
 .intellij/*
 *.iml
 out/*
+*/.idea/*
