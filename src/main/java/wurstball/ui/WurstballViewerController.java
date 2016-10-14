@@ -159,7 +159,7 @@ public class WurstballViewerController implements Initializable {
      */
     public void toggleFullscreen() {
         Stage stage = (Stage) maincontainer.getScene().getWindow();
-        stage.setFullScreen(true);
+        stage.setFullScreen(!stage.isFullScreen());
     }
 
     /**
