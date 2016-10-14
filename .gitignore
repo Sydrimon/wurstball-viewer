@@ -6,3 +6,5 @@ nbproject/private/*
 nbactions.xml
 .intellij/*
 *.iml
+.idea
+out/*
