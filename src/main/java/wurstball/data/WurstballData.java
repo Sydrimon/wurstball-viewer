@@ -47,7 +47,8 @@ public class WurstballData {
     }
 
     /**
-     * returns the URL of the picture from {@link wurstball.Wurstball#ADDRESS ADDRESS} with the tag
+     * returns the URL of the picture from
+     * {@link wurstball.Wurstball#ADDRESS ADDRESS} with the tag
      * {@link wurstball.Wurstball#PIC_TAG PIC_TAG}
      *
      * @return URL of the picture
@@ -74,7 +75,7 @@ public class WurstballData {
      * @return the first {@link wurstball.data.PictureElement PictureElement} in
      * the buffer
      */
-    public PictureElement getNextPic() {
+    public PictureElement getPicFromBuffer() {
         for (int i = 0; i < MAX_RETRIES; i++) {
             try {
                 PictureElement pic = picBuffer.take();
@@ -116,16 +117,23 @@ public class WurstballData {
 
     /**
      *
-     * @param previous if true returns previous pic else next pic
-     * @return the previous or next pic in the list or null if there is no other
+     * @return the previous pic in the list or null if there is no other
      * pic in the list
      */
-    public PictureElement getPreviousPic(boolean previous) {
-        if (previous) {
-            if (!prevPics.isEmpty() && currentPicIndex != 0) {
-                return prevPics.get(--currentPicIndex);
-            }
-        } else if (!prevPics.isEmpty() && currentPicIndex != prevPics.size() - 1) {
+    public PictureElement getPreviousPic() {
+        if (!prevPics.isEmpty() && currentPicIndex != 0) {
+            return prevPics.get(--currentPicIndex);
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @return the next pic in the list or null if there is no other
+     * pic in the list
+     */
+    public PictureElement getNextPic() {
+        if (!prevPics.isEmpty() && currentPicIndex != prevPics.size() - 1) {
             return prevPics.get(++currentPicIndex);
         }
         return null;
