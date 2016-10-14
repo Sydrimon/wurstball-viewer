@@ -40,7 +40,7 @@ public class WurstballViewerController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         clipboard = Clipboard.getSystemClipboard();
-        currentPic = wurstballData.getNextPic();
+        currentPic = wurstballData.getPicFromBuffer();
 
         setCurrentImage();
     }
@@ -111,7 +111,7 @@ public class WurstballViewerController implements Initializable {
      * shows the next reandom picture
      */
     public void randomPicture() {
-        currentPic = WurstballData.getInstance().getNextPic();
+        currentPic = WurstballData.getInstance().getPicFromBuffer();
         setCurrentImage();
         pausePresentation();
     }
@@ -149,7 +149,7 @@ public class WurstballViewerController implements Initializable {
 //            pausePresentation();
 //        } else {
 //            future = EXECUTOR.scheduleAtFixedRate(() -> {
-//                Wurstball.changePic(WurstballData.getInstance().getNextPic().getImage());
+//                Wurstball.changePic(WurstballData.getInstance().getPicFromBuffer().getImage());
 //            }, 0, 2, TimeUnit.SECONDS);
 //        }
     }
@@ -195,7 +195,7 @@ public class WurstballViewerController implements Initializable {
      * picture
      */
     public void showPreviousPicture() {
-        currentPic= wurstballData.getPreviousPic(true); //todo not working correct
+        currentPic= wurstballData.getPreviousPic();
         setCurrentImage();
     }
 
