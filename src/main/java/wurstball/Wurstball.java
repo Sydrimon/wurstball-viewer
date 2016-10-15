@@ -16,8 +16,7 @@ import javafx.stage.WindowEvent;
  */
 public class Wurstball extends Application {
 
-    private static final Logger LOGGER = Logger.getLogger( Wurstball.class.
-            getName() );
+    private static final Logger LOGGER = Logger.getLogger(Wurstball.class.getName());
 
     public static final int MAX_RETRIES = 4;
 
@@ -32,36 +31,35 @@ public class Wurstball extends Application {
     public static final String PIC_TAG = "div[id=content-main] > img";
 
     @Override
-    public void start( Stage stage ) throws IOException {
-        BorderPane root = FXMLLoader.load( getClass()
-                .getResource( "/wurstballviewer.fxml" ) );
+    public void start(Stage stage) throws IOException {
+        BorderPane root = FXMLLoader.load(getClass().getResource("/wurstballviewer.fxml"));
 
         // Set Scene
-        Scene scene = new Scene( root );
-        scene.setFill( Color.BLACK );
-        scene.getStylesheets().add( "/style.css" );
-        stage.setScene( scene );
+        Scene scene = new Scene(root);
+        scene.setFill(Color.BLACK);
+        scene.getStylesheets().add("/style.css");
+        stage.setScene(scene);
 
-        initPrimaryStage( stage );
+        initPrimaryStage(stage);
     }
 
-    private void initPrimaryStage( Stage stage ) {
-        stage.setTitle( "Wurstball-Viewer 2.0" );
-        stage.setMaximized( true );
-        stage.setOnCloseRequest( ( WindowEvent event ) -> {
+    private void initPrimaryStage(Stage stage) {
+        stage.setTitle("Wurstball-Viewer 2.0");
+        stage.setMaximized(true);
+        stage.setOnCloseRequest((WindowEvent event) -> {
             ImageLoader.EXECUTOR.shutdownNow();
-        } );
-        stage.setMinHeight( 600 );
-        stage.setMinWidth( 800 );
-        stage.setFullScreen( true );
+        });
+        stage.setMinHeight(600);
+        stage.setMinWidth(800);
+        stage.setFullScreen(true);
         stage.show();
     }
 
     /**
      * @param args the command line arguments
      */
-    public static void main( String[] args ) {
-        launch( args );
+    public static void main(String[] args) {
+        launch(args);
     }
 
 }

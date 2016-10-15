@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -117,8 +116,8 @@ public class WurstballData {
 
     /**
      *
-     * @return the previous pic in the list or null if there is no other
-     * pic in the list
+     * @return the previous pic in the list or null if there is no other pic in
+     * the list
      */
     public PictureElement getPreviousPic() {
         if (!prevPics.isEmpty() && currentPicIndex != 0) {
@@ -129,8 +128,8 @@ public class WurstballData {
 
     /**
      *
-     * @return the next pic in the list or null if there is no other
-     * pic in the list
+     * @return the next pic in the list or null if there is no other pic in the
+     * list
      */
     public PictureElement getNextPic() {
         if (!prevPics.isEmpty() && currentPicIndex != prevPics.size() - 1) {

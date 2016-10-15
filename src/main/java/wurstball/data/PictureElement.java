@@ -50,8 +50,9 @@ public class PictureElement {
         FileChooser fileChooser = new FileChooser();
 
         fileChooser.setTitle("Select an Image");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"));
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home") + "/Bilder"));
+        fileChooser.getExtensionFilters().add(new FileChooser.
+                ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"));
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         fileChooser.setInitialFileName(imageURL.substring(imageURL.length() - 13));
 
         File file = fileChooser.showSaveDialog(fileChooserStage);

@@ -14,7 +14,7 @@ public class ImageLoader implements Runnable {
 
     public static final int THREAD_POOL_SIZE = 8;
     public static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(THREAD_POOL_SIZE);
-    
+
     @Override
     public void run() {
         while (true) {
