@@ -11,12 +11,16 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import wurstball.Wurstball;
 import wurstball.data.PictureElement;
@@ -29,9 +33,17 @@ public class WurstballViewerController implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(Wurstball.class.getName());
     private static final int OUTER_PADDING = 20;
+    private boolean barVisisble =true;
 
     @FXML
     private ImageView imagecontainer;
+    @FXML
+    private HBox btmPanel;
+    @FXML
+    private MenuItem toggleViewBtn;
+    @FXML
+    private Menu optionsSelect;
+
     @FXML
     private ScrollPane maincontainer;
     private DoubleProperty currentImageZoom;
@@ -45,11 +57,35 @@ public class WurstballViewerController implements Initializable {
         clipboard = Clipboard.getSystemClipboard();
         currentPic = wurstballData.getPicFromBuffer();
         currentImageZoom = new SimpleDoubleProperty(1);
-
+//toggleViewBtn.setText("money");
         currentImageZoom.addListener(new ZoomChangeListener());
 
         setCurrentImage();
     }
+
+    //Method to toggle the visibility of the bottom buttons
+    @FXML
+    private void toggleButtons(){
+
+
+        if(btmPanel.isVisible()){
+            btmPanel.setVisible(false);
+            //DEBUG ONLY (Setting btm panel to invisible):
+            //System.out.print("invisible" +toggleViewBtn);
+            toggleViewBtn.setText("Show Buttons");
+
+
+        }else {
+
+            toggleViewBtn.setText("Hide Buttons");
+            btmPanel.setVisible(true);
+        }
+
+
+    }
+
+    //Method to toggle the text displayed to either hide buttons or show.
+
 
     @FXML
     private void handleKeyPress(KeyEvent event) {
