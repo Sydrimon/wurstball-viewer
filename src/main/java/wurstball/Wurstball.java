@@ -3,12 +3,14 @@ package wurstball;
 import java.io.IOException;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import sun.rmi.runtime.Log;
 
 /**
  *
@@ -32,6 +34,7 @@ public class Wurstball extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+
         BorderPane root = FXMLLoader.load(getClass().getResource("/wurstballviewer.fxml"));
 
         // Set Scene
@@ -42,6 +45,7 @@ public class Wurstball extends Application {
 
         initPrimaryStage(stage);
     }
+
 
     private void initPrimaryStage(Stage stage) {
         stage.setTitle("Wurstball-Viewer 2.0");
@@ -54,6 +58,7 @@ public class Wurstball extends Application {
         stage.setFullScreen(true);
         stage.show();
     }
+
 
     /**
      * @param args the command line arguments
