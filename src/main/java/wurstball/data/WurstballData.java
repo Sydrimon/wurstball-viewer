@@ -9,9 +9,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import wurstball.ImageLoader;
-import static wurstball.Wurstball.ADDRESS;
-import static wurstball.Wurstball.MAX_RETRIES;
-import static wurstball.Wurstball.PIC_TAG;
 
 /**
  *
@@ -21,8 +18,16 @@ public class WurstballData {
 
     private static final Logger LOGGER = Logger.getLogger(WurstballData.class.getName());
 
-    public static final int PREVIOUS_PIC_MAX = 10;
-    public static final int PIC_BUFFER_MAX_SIZE = 5;
+    public static final String ADDRESS = "http://wurstball.de/random/";
+
+    /**
+     * the tag of the picture on the website
+     */
+    private static final String PIC_TAG = "div[id=content-main] > img";
+
+    private static final int MAX_RETRIES = 4;
+    private static final int PREVIOUS_PIC_MAX = 10;
+    private static final int PIC_BUFFER_MAX_SIZE = 5;
 
     public final ArrayBlockingQueue<PictureElement> picBuffer;
     public final ArrayList<PictureElement> prevPics;

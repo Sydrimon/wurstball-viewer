@@ -18,18 +18,6 @@ public class Wurstball extends Application {
 
     private static final Logger LOGGER = Logger.getLogger(Wurstball.class.getName());
 
-    public static final int MAX_RETRIES = 4;
-
-    /**
-     * the address of the site to get the picture from
-     */
-    public static final String ADDRESS = "http://wurstball.de/random/";
-
-    /**
-     * the tag of the picture on the website
-     */
-    public static final String PIC_TAG = "div[id=content-main] > img";
-
     @Override
     public void start(Stage stage) throws IOException {
         BorderPane root = FXMLLoader.load(getClass().getResource("/wurstballviewer.fxml"));
