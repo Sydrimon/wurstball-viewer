@@ -7,14 +7,16 @@
 
 Controls:
 
-**Key** | **Description**
------|------
-r | random image
-+ | zoom in
-- | zoom out
-CTRL + left | previous image
-CTRL + right | next image
-CTRL + C | copy image address to clipboard
-CTRL + S | save image
-CTRL + F | toggle full screen mode
-SPACE | start/stop presentation mode
+| **Key** | **Description** |
+| ----- | ------ |
+| `r` | random image |
+| `+` | zoom in |
+| `-` | zoom out |
+| `left` | previous image |
+| `right` | next image |
+| `C` | copy image address to clipboard |
+| `S` | save image |
+| `F` | toggle full screen mode |
+| `SPACE` | start/stop presentation mode |
+
+**Presentation Mode is currrently not working!!**
