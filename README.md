@@ -14,9 +14,9 @@ Controls:
 | `-` | zoom out |
 | `left` | previous image |
 | `right` | next image |
-| `C` | copy image address to clipboard |
-| `S` | save image |
-| `F` | toggle full screen mode |
+| `c` | copy image address to clipboard |
+| `s` | save image |
+| `f` | toggle full screen mode |
 | `SPACE` | start/stop presentation mode |
 
 **Presentation Mode is currrently not working!!**
