@@ -19,11 +19,15 @@ public class ImageLoader implements Runnable {
     public void run() {
         while (true) {
             try {
-                WurstballData.getInstance().picBuffer.put(new PictureElement(WurstballData.getInstance().getPicUrl()));
+                String url = WurstballData.getInstance().getPicUrl();
+                if (url != null) {
+                    WurstballData.getInstance().picBuffer.put(new PictureElement(url));
+                } else {
+                    return;
+                }
             } catch (InterruptedException ex) {
                 return;
             }
         }
     }
-
 }
