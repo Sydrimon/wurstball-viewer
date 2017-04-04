@@ -130,6 +130,7 @@ public class WurstballViewerController implements Initializable {
      * shows the next reandom picture
      */
     public void randomPicture() {
+        //todo in thread -> non blocking
         currentPic = WurstballData.getInstance().getPicFromBuffer();
         setCurrentImage();
         pausePresentation();
