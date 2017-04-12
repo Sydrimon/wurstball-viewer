@@ -65,6 +65,7 @@ public class WurstballData {
     public boolean bufferIsEmpty() {
         return picBuffer.isEmpty();
     }
+
     /**
      * returns the URL of the picture from
      * {@link wurstball.Wurstball#ADDRESS ADDRESS} with the tag
