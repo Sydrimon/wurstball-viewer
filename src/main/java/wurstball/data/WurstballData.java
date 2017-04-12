@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import wurstball.ImageLoader;
-import static wurstball.Wurstball.ADDRESS;
-import static wurstball.Wurstball.PIC_TAG;
+import wurstball.ThreadController;
 
 /**
  *
@@ -21,11 +18,19 @@ public class WurstballData {
 
     private static final Logger LOGGER = Logger.getLogger(WurstballData.class.getName());
 
-    public static final int PREVIOUS_PIC_MAX = 10;
-    public static final int PIC_BUFFER_MAX_SIZE = 5;
+    public static final String ADDRESS = "http://wurstball.de/random/";
 
-    public final ArrayBlockingQueue<PictureElement> picBuffer;
-    public final ArrayList<PictureElement> prevPics;
+    /**
+     * the tag of the picture on the website
+     */
+    private static final String PIC_TAG = "div[id=content-main] > img";
+
+    private static final int MAX_RETRIES = 4;
+    private static final int PREVIOUS_PIC_MAX = 10;
+    private static final int PIC_BUFFER_MAX_SIZE = 5;
+
+    private final ArrayBlockingQueue<PictureElement> picBuffer;
+    private final ArrayList<PictureElement> prevPics;
 
     private int currentPicIndex;
 
@@ -35,8 +40,8 @@ public class WurstballData {
     private WurstballData() {
         picBuffer = new ArrayBlockingQueue<>(PIC_BUFFER_MAX_SIZE, true);
         prevPics = new ArrayList<>(PREVIOUS_PIC_MAX);
-        fillBuffer();
         config = ConfigData.getInstance();
+        ThreadController.startImageLoader();
     }
 
     /**
@@ -50,9 +55,19 @@ public class WurstballData {
     public ConfigData getConfig() {
         return config;
     }
-    
+
+    //todo javadoc
+    public void addPicToBuffer(PictureElement pic) throws InterruptedException {
+        picBuffer.put(pic);
+    }
+
+    //todo javadoc
+    public boolean bufferIsEmpty() {
+        return picBuffer.isEmpty();
+    }
     /**
-     * returns the URL of the picture from {@link wurstball.Wurstball#ADDRESS ADDRESS} with the tag
+     * returns the URL of the picture from
+     * {@link wurstball.Wurstball#ADDRESS ADDRESS} with the tag
      * {@link wurstball.Wurstball#PIC_TAG PIC_TAG}
      *
      * @return URL of the picture
@@ -73,33 +88,34 @@ public class WurstballData {
     }
 
     /**
-     * fills the {@link #picBuffer picBuffer} with PictureElements and returns
-     * the first one
+     * returns the first picture in the buffer (blocking)
      *
      * @return the first {@link wurstball.data.PictureElement PictureElement} in
      * the buffer
      */
-    public PictureElement getNextPic() {
-        for (int i = 0; i < config.getMaxRetries(); i++) {
-            try {
-                PictureElement pic = picBuffer.take();
-                addPreviousPic(pic);
-                return pic;
-            } catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, "Interrupted on waiting for pictures", ex);
-            }
+    public PictureElement getPicFromBuffer() {
+        try {
+            PictureElement pic = picBuffer.take();
+            addPreviousPic(pic);
+            return pic;
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "Interrupted on waiting for pictures", ex);
         }
         return null;
     }
 
     /**
-     * fills the picture buffer with
-     * {@link wurstball.data.PictureElement PictureElements}
+     * returns the first picture in the buffer (non-blocking)
+     *
+     * @return the first {@link wurstball.data.PictureElement PictureElement} in
+     * the buffer
      */
-    private void fillBuffer() {
-        for (int i = 0; i < ImageLoader.THREAD_POOL_SIZE; i++) {
-            ImageLoader.EXECUTOR.execute(new ImageLoader());
+    public PictureElement pollPicFromBuffer() {
+        PictureElement pic = picBuffer.poll();
+        if (pic != null) {
+            addPreviousPic(pic);
         }
+        return pic;
     }
 
     /**
@@ -121,16 +137,23 @@ public class WurstballData {
 
     /**
      *
-     * @param previous if true returns previous pic else next pic
-     * @return the previous or next pic in the list or null if there is no other
-     * pic in the list
+     * @return the previous pic in the list or null if there is no other pic in
+     * the list
      */
-    public PictureElement getPreviousPic(boolean previous) {
-        if (previous) {
-            if (!prevPics.isEmpty() && currentPicIndex != 0) {
-                return prevPics.get(--currentPicIndex);
-            }
-        } else if (!prevPics.isEmpty() && currentPicIndex != prevPics.size() - 1) {
+    public PictureElement getPreviousPic() {
+        if (!prevPics.isEmpty() && currentPicIndex != 0) {
+            return prevPics.get(--currentPicIndex);
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @return the next pic in the list or null if there is no other pic in the
+     * list
+     */
+    public PictureElement getNextPic() {
+        if (!prevPics.isEmpty() && currentPicIndex != prevPics.size() - 1) {
             return prevPics.get(++currentPicIndex);
         }
         return null;

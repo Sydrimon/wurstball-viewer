@@ -1,5 +1,13 @@
 package wurstball.ui;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -9,21 +17,17 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import wurstball.ThreadController;
 import wurstball.Wurstball;
 import wurstball.data.PictureElement;
 import wurstball.data.WurstballData;
-
-import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by franziskah on 11.10.16.
  */
 public class WurstballViewerController implements Initializable {
+
     private static final Logger LOGGER = Logger.getLogger(Wurstball.class.getName());
     private static final int OUTER_PADDING = 20;
 
@@ -31,51 +35,64 @@ public class WurstballViewerController implements Initializable {
     private ImageView imagecontainer;
     @FXML
     private ScrollPane maincontainer;
-
+    private DoubleProperty currentImageZoom;
     private final WurstballData wurstballData = WurstballData.getInstance();
 
     private static PictureElement currentPic;
-    private static Clipboard clipboard ;
+    private static Clipboard clipboard;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         clipboard = Clipboard.getSystemClipboard();
-        currentPic = wurstballData.getNextPic();
+        currentPic = wurstballData.getPicFromBuffer();
+        currentImageZoom = new SimpleDoubleProperty(1);
+
+        currentImageZoom.addListener(new ZoomChangeListener());
 
         setCurrentImage();
     }
 
     @FXML
-    private void handleKeyPress(KeyEvent event){
+    private void handleKeyPress(KeyEvent event) {
         KeyCode pressed = event.getCode();
-        switch(pressed){
-            case R : randomPicture();
+        switch (pressed) {
+            case R:
+                randomPicture();
                 break;
-            case M : resetImageScale();
+            case M:
+                resetImageScale();
                 break;
-            case SPACE: togglePresentationMode();
+            case SPACE:
+                togglePresentationMode();
                 break;
-            case S: savePictureToFile();
+            case S:
+                savePictureToFile();
                 break;
-            case LEFT: showPreviousPicture();
+            case LEFT:
+                showPreviousPicture();
                 break;
-            case RIGHT: showNextPicture();
+            case RIGHT:
+                showNextPicture();
                 break;
-            case C: copyPictureUrl();
+            case C:
+                copyPictureUrl();
                 break;
-            case F: toggleFullscreen();
+            case F:
+                toggleFullscreen();
                 break;
-            case PLUS: rescaleUp();
+            case PLUS:
+                rescaleUp();
                 break;
-            case MINUS: rescaleDown();
+            case MINUS:
+                rescaleDown();
                 break;
             default:
                 //Because of a bug, that javafx thinks a pressed +/- is some else key
                 String pressedKeyText = event.getText();
-                if(pressedKeyText.equals("-")){
+                if (pressedKeyText.equals("-")) {
                     rescaleDown();
                 }
-                if(pressedKeyText.equals("+")){
+                if (pressedKeyText.equals("+")) {
                     rescaleUp();
                 }
                 break;
@@ -86,24 +103,27 @@ public class WurstballViewerController implements Initializable {
      * Set the current image as the shown one
      */
     private void setCurrentImage() {
-        if(currentPic != null){
+        if (currentPic != null) {
             imagecontainer.setImage(currentPic.getImage());
+            resetImageScale();
         }
         resetImageScale();
         fitSizeOfImageContainer();
     }
 
     public void resetImageScale() {
-        imagecontainer.setScaleX(1.0);
-        imagecontainer.setScaleY(1.0);
+        imagecontainer.setFitHeight(currentPic.getImage().getHeight());
+        imagecontainer.setFitWidth(currentPic.getImage().getWidth());
     }
 
     public void fitSizeOfImageContainer() {
         //Match the height and width
         Scene scene = imagecontainer.getScene();
-        if(scene != null){
-            imagecontainer.fitWidthProperty().bind(maincontainer.widthProperty().subtract(OUTER_PADDING));
-            imagecontainer.fitHeightProperty().bind(maincontainer.heightProperty().subtract(OUTER_PADDING));
+        if (scene != null) {
+//            imagecontainer.fitWidthProperty().bind( maincontainer.
+//                    widthProperty().subtract( OUTER_PADDING ) );
+//            imagecontainer.fitHeightProperty().bind( maincontainer.
+//                    heightProperty().subtract( OUTER_PADDING ) );
         }
     }
 
@@ -111,24 +131,22 @@ public class WurstballViewerController implements Initializable {
      * shows the next reandom picture
      */
     public void randomPicture() {
-        currentPic = WurstballData.getInstance().getNextPic();
-        setCurrentImage();
-        pausePresentation();
+        //pausePresentation();
+        currentPic = WurstballData.getInstance().pollPicFromBuffer();
+        if (currentPic == null) {
+            ThreadController.getInstance().checkConnection();
+        } else {
+            setCurrentImage();
+        }
     }
-
 
     /**
      * rescales the current picture up
      */
     public void rescaleUp() {
         //todo
-       //pausePresentation();
-        scaleImage(2.0);
-    }
-
-    private void scaleImage(Double scaleValue) {
-        imagecontainer.setScaleX(imagecontainer.getScaleX() * scaleValue);
-        imagecontainer.setScaleY(imagecontainer.getScaleY() * scaleValue);
+        //pausePresentation();
+        currentImageZoom.set(currentImageZoom.get() * 2.0);
     }
 
     /**
@@ -137,7 +155,16 @@ public class WurstballViewerController implements Initializable {
     public void rescaleDown() {
         //todo
 //        pausePresentation();
-        scaleImage(0.5);
+        currentImageZoom.set(currentImageZoom.get() * 0.5);
+    }
+
+    /**
+     * @deprecated on behalf of ZoomChangeListener
+     * @param scaleValue
+     */
+    private void scaleImage(Double scaleValue) {
+        imagecontainer.setScaleX(imagecontainer.getScaleX() * scaleValue);
+        imagecontainer.setScaleY(imagecontainer.getScaleY() * scaleValue);
     }
 
     /**
@@ -149,7 +176,7 @@ public class WurstballViewerController implements Initializable {
 //            pausePresentation();
 //        } else {
 //            future = EXECUTOR.scheduleAtFixedRate(() -> {
-//                Wurstball.changePic(WurstballData.getInstance().getNextPic().getImage());
+//                Wurstball.changePic(WurstballData.getInstance().getPicFromBuffer().getImage());
 //            }, 0, 2, TimeUnit.SECONDS);
 //        }
     }
@@ -159,7 +186,7 @@ public class WurstballViewerController implements Initializable {
      */
     public void toggleFullscreen() {
         Stage stage = (Stage) maincontainer.getScene().getWindow();
-        stage.setFullScreen(true);
+        stage.setFullScreen(!stage.isFullScreen());
     }
 
     /**
@@ -186,7 +213,7 @@ public class WurstballViewerController implements Initializable {
      * sets the next picture of the previous viewed pictures as current picture
      */
     public void showNextPicture() {
-        currentPic= wurstballData.getNextPic();
+        currentPic = wurstballData.getNextPic();
         setCurrentImage();
     }
 
@@ -195,7 +222,7 @@ public class WurstballViewerController implements Initializable {
      * picture
      */
     public void showPreviousPicture() {
-        currentPic= wurstballData.getPreviousPic(true); //todo not working correct
+        currentPic = wurstballData.getPreviousPic();
         setCurrentImage();
     }
 
@@ -204,8 +231,27 @@ public class WurstballViewerController implements Initializable {
      */
     public void pausePresentation() {
         //todo
-//        if (future != null && !future.isCancelled()) {
-//            future.cancel(false);
-//        }
+        //        if (future != null && !future.isCancelled()) {
+        //            future.cancel(false);
+        //        }
     }
+
+    /**
+     * Created by J. Pichardo on 10/14/16 Listener to handle zoom value changes
+     */
+    private class ZoomChangeListener implements ChangeListener {
+
+        @Override
+        public void changed(ObservableValue ov, Object t, Object t1) {
+
+            //Ratio of change.
+            double zoomRatio = Math.abs((double) t1 / (double) t);
+
+            //Set ImageScale
+            imagecontainer.setFitHeight(imagecontainer.getFitHeight() * zoomRatio);
+            imagecontainer.setFitWidth(imagecontainer.getFitWidth() * zoomRatio);
+        }
+
+    }
+
 }

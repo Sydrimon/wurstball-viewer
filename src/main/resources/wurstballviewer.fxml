@@ -5,15 +5,23 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.geometry.Insets?>
 
+<?import javafx.scene.image.Image?>
 <BorderPane xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="wurstball.ui.WurstballViewerController"
             style="-fx-background: #000;">
+    <top>
+        <ImageView  preserveRatio="true"
+                    fitHeight="30">
+            <Image url="wurstball_logo_text.png"></Image>
+        </ImageView>
+    </top>
     <center>
         <ScrollPane
-                fitToHeight="true" fitToWidth="true"
-                fx:id="maincontainer"
-                onKeyPressed="#handleKeyPress">
+            fitToHeight="true" fitToWidth="true"
+            fx:id="maincontainer"
+            pannable="true"
+            onKeyPressed="#handleKeyPress">
             <HBox alignment="CENTER">
                 <ImageView fx:id="imagecontainer"
                            preserveRatio="true"
@@ -24,29 +32,31 @@
     </center>
     <bottom>
         <HBox spacing="5"
-        alignment="CENTER">
-        <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
-        <Button text="Presentation Mode" prefHeight="20"
-                onAction="#togglePresentationMode"/>
-        <Button text="Fullscreen" prefHeight="20"
-                onAction="#toggleFullscreen"/>
-        <Button text="Save to File" prefHeight="20"
-                onAction="#savePictureToFile"/>
-        <Button text="Copy Url" prefHeight="20"
-                onAction="#copyPictureUrl"/>
-        <Button text="Scale down" prefHeight="20"
-                onAction="#rescaleDown"/>
-        <Button text="Scale up" prefHeight="20"
-                onAction="#rescaleUp"/>
-        <Button text="Reset Scale" prefHeight="20"
-                onAction="#resetImageScale"/>
-        <Button text="Random" prefHeight="20"
-                onAction="#randomPicture"/>
-        <Button text="Previous" prefHeight="20" id="previousbutton"
-                onAction="#showPreviousPicture"/>
-        <Button text="Next" prefHeight="20" id="nextbutton"
-                onAction="#showNextPicture"/>
-    </HBox>
+              alignment="CENTER">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Button text="Presentation Mode" prefHeight="20"
+                    onAction="#togglePresentationMode"/>
+            <Button text="Fullscreen" prefHeight="20"
+                    onAction="#toggleFullscreen"/>
+            <Button text="Save to File" prefHeight="20"
+                    onAction="#savePictureToFile"/>
+            <Button text="Copy Url" prefHeight="20"
+                    onAction="#copyPictureUrl"/>
+            <Button text="Scale down" prefHeight="20"
+                    onAction="#rescaleDown"/>
+            <Button text="Scale up" prefHeight="20"
+                    onAction="#rescaleUp"/>
+            <Button text="Reset Scale" prefHeight="20"
+                    onAction="#resetImageScale"/>
+            <Button text="Random" prefHeight="20"
+                    onAction="#randomPicture"/>
+            <Button text="Previous" prefHeight="20" id="previousbutton"
+                    onAction="#showPreviousPicture"/>
+            <Button text="Next" prefHeight="20" id="nextbutton"
+                    onAction="#showNextPicture"/>
+        </HBox>
     </bottom>
 </BorderPane>
 
