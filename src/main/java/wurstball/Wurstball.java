@@ -35,7 +35,7 @@ public class Wurstball extends Application {
         stage.setTitle("Wurstball-Viewer 2.0");
         stage.setMaximized(true);
         stage.setOnCloseRequest((WindowEvent event) -> {
-            ImageLoader.EXECUTOR.shutdownNow();
+            ThreadController.shutdown();
         });
         stage.setMinHeight(600);
         stage.setMinWidth(800);

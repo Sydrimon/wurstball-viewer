@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import wurstball.ImageLoader;
+import wurstball.ThreadController;
 
 /**
  *
@@ -29,8 +29,8 @@ public class WurstballData {
     private static final int PREVIOUS_PIC_MAX = 10;
     private static final int PIC_BUFFER_MAX_SIZE = 5;
 
-    public final ArrayBlockingQueue<PictureElement> picBuffer;
-    public final ArrayList<PictureElement> prevPics;
+    private final ArrayBlockingQueue<PictureElement> picBuffer;
+    private final ArrayList<PictureElement> prevPics;
 
     private int currentPicIndex;
 
@@ -39,7 +39,7 @@ public class WurstballData {
     private WurstballData() {
         picBuffer = new ArrayBlockingQueue<>(PIC_BUFFER_MAX_SIZE, true);
         prevPics = new ArrayList<>(PREVIOUS_PIC_MAX);
-        fillBuffer();
+        ThreadController.startImageLoader();
     }
 
     /**
@@ -48,6 +48,16 @@ public class WurstballData {
      */
     public static WurstballData getInstance() {
         return INSTANCE;
+    }
+
+    //todo javadoc
+    public void addPicToBuffer(PictureElement pic) throws InterruptedException {
+        picBuffer.put(pic);
+    }
+
+    //todo javadoc
+    public boolean bufferIsEmpty() {
+        return picBuffer.isEmpty();
     }
 
     /**
@@ -73,33 +83,34 @@ public class WurstballData {
     }
 
     /**
-     * fills the {@link #picBuffer picBuffer} with PictureElements and returns
-     * the first one
+     * returns the first picture in the buffer (blocking)
      *
      * @return the first {@link wurstball.data.PictureElement PictureElement} in
      * the buffer
      */
     public PictureElement getPicFromBuffer() {
-        for (int i = 0; i < MAX_RETRIES; i++) {
-            try {
-                PictureElement pic = picBuffer.take();
-                addPreviousPic(pic);
-                return pic;
-            } catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, "Interrupted on waiting for pictures", ex);
-            }
+        try {
+            PictureElement pic = picBuffer.take();
+            addPreviousPic(pic);
+            return pic;
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "Interrupted on waiting for pictures", ex);
         }
         return null;
     }
 
     /**
-     * fills the picture buffer with
-     * {@link wurstball.data.PictureElement PictureElements}
+     * returns the first picture in the buffer (non-blocking)
+     *
+     * @return the first {@link wurstball.data.PictureElement PictureElement} in
+     * the buffer
      */
-    private void fillBuffer() {
-        for (int i = 0; i < ImageLoader.THREAD_POOL_SIZE; i++) {
-            ImageLoader.EXECUTOR.execute(new ImageLoader());
+    public PictureElement pollPicFromBuffer() {
+        PictureElement pic = picBuffer.poll();
+        if (pic != null) {
+            addPreviousPic(pic);
         }
+        return pic;
     }
 
     /**

@@ -18,6 +18,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import wurstball.ThreadController;
 import wurstball.Wurstball;
 import wurstball.data.PictureElement;
 import wurstball.data.WurstballData;
@@ -130,9 +131,13 @@ public class WurstballViewerController implements Initializable {
      * shows the next reandom picture
      */
     public void randomPicture() {
-        currentPic = WurstballData.getInstance().getPicFromBuffer();
-        setCurrentImage();
-        pausePresentation();
+        //pausePresentation();
+        currentPic = WurstballData.getInstance().pollPicFromBuffer();
+        if (currentPic == null) {
+            ThreadController.getInstance().checkConnection();
+        } else {
+            setCurrentImage();
+        }
     }
 
     /**
