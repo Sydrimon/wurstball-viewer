@@ -134,7 +134,7 @@ public class WurstballViewerController implements Initializable {
         //pausePresentation();
         currentPic = WurstballData.getInstance().pollPicFromBuffer();
         if (currentPic == null) {
-            ThreadController.getInstance().checkConnection();
+            ThreadController.getInstance().checkThreads();
         } else {
             setCurrentImage();
         }
