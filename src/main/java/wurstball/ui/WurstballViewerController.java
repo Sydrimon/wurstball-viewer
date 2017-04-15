@@ -132,10 +132,12 @@ public class WurstballViewerController implements Initializable {
      */
     public void randomPicture() {
         //pausePresentation();
-        currentPic = WurstballData.getInstance().pollPicFromBuffer();
-        if (currentPic == null) {
+        PictureElement newPic;
+        newPic = WurstballData.getInstance().pollPicFromBuffer();
+        if (newPic == null) {
             ThreadController.getInstance().checkConnection();
         } else {
+            currentPic = newPic;
             setCurrentImage();
         }
     }
