@@ -46,6 +46,7 @@ public class WurstballViewerController implements Initializable {
         clipboard = Clipboard.getSystemClipboard();
         currentPic = wurstballData.getPicFromBuffer();
         currentImageZoom = new SimpleDoubleProperty(1);
+        imagecontainer.setPreserveRatio(true);
 
         currentImageZoom.addListener(new ZoomChangeListener());
 
@@ -216,7 +217,9 @@ public class WurstballViewerController implements Initializable {
      */
     public void showNextPicture() {
         currentPic = wurstballData.getNextPic();
-        setCurrentImage();
+        if (currentPic != null) {
+            setCurrentImage();
+        }
     }
 
     /**
@@ -225,7 +228,9 @@ public class WurstballViewerController implements Initializable {
      */
     public void showPreviousPicture() {
         currentPic = wurstballData.getPreviousPic();
-        setCurrentImage();
+        if (currentPic != null) {
+            setCurrentImage();
+        }
     }
 
     /**
