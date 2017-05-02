@@ -62,21 +62,25 @@ public class ThreadController implements Observer {
     public void update(Observable o, Object o1) {
         if (runningThreads < ImageLoader.THREAD_POOL_SIZE) {
             decrementRunningThreads();
-            try {
-                //todo test connection
-                Document doc = Jsoup.connect("http://wurstball.de/").get();
-                //if still connected
-                startImageLoader(ImageLoader.THREAD_POOL_SIZE - runningThreads);
-                resetRunningThreads();
-            } catch (IOException ex) {
-                Logger.getLogger(ThreadController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            checkConnection();
         } else {
             decrementRunningThreads();
         }
     }
-    
-    public void checkConnection() {
-        this.update(null, null);
+
+    private void checkConnection() {
+        try {
+            //todo test connection
+            Document doc = Jsoup.connect("http://wurstball.de/").get();
+            //if still connected
+            startImageLoader(ImageLoader.THREAD_POOL_SIZE - runningThreads);
+            resetRunningThreads();
+        } catch (IOException ex) {
+            Logger.getLogger(ThreadController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void checkThreads() {
+        this.checkConnection();
     }
 }
