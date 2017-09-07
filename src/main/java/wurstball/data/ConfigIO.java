@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +32,7 @@ public class ConfigIO {
             String jsonString = gson.toJson(data);
             configWriter.write(jsonString);
             LOGGER.log(Level.FINER, "jsonString={0}", jsonString);
+            Files.setAttribute(Paths.get(CONFIG_PATH), "dos:hidden", true);
         }
     }
     
