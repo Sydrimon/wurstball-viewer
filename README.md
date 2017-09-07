@@ -19,4 +19,4 @@ Controls:
 | `f` | toggle full screen mode |
 | `SPACE` | start/stop presentation mode |
 
-**Presentation Mode is currrently not working!!**
+**Presentation Mode is currrently working in develop branch only!!**
