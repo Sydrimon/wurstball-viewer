@@ -2,6 +2,10 @@ package wurstball.ui;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.DoubleProperty;
@@ -40,6 +44,8 @@ public class WurstballViewerController implements Initializable {
 
     private static PictureElement currentPic;
     private static Clipboard clipboard;
+    public static Future future;
+    public static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -58,21 +64,26 @@ public class WurstballViewerController implements Initializable {
         KeyCode pressed = event.getCode();
         switch (pressed) {
             case R:
+                pausePresentation();
                 randomPicture();
                 break;
             case M:
+                pausePresentation();
                 resetImageScale();
                 break;
             case SPACE:
                 togglePresentationMode();
                 break;
             case S:
+                pausePresentation();
                 savePictureToFile();
                 break;
             case LEFT:
+                pausePresentation();
                 showPreviousPicture();
                 break;
             case RIGHT:
+                pausePresentation();
                 showNextPicture();
                 break;
             case C:
@@ -82,9 +93,11 @@ public class WurstballViewerController implements Initializable {
                 toggleFullscreen();
                 break;
             case PLUS:
+                pausePresentation();
                 rescaleUp();
                 break;
             case MINUS:
+                pausePresentation();
                 rescaleDown();
                 break;
             default:
@@ -132,7 +145,6 @@ public class WurstballViewerController implements Initializable {
      * shows the next reandom picture
      */
     public void randomPicture() {
-        //pausePresentation();
         PictureElement newPic;
         newPic = WurstballData.getInstance().pollPicFromBuffer();
         if (newPic == null) {
@@ -147,8 +159,6 @@ public class WurstballViewerController implements Initializable {
      * rescales the current picture up
      */
     public void rescaleUp() {
-        //todo
-        //pausePresentation();
         currentImageZoom.set(currentImageZoom.get() * 2.0);
     }
 
@@ -156,8 +166,6 @@ public class WurstballViewerController implements Initializable {
      * rescales the current picture down
      */
     public void rescaleDown() {
-        //todo
-//        pausePresentation();
         currentImageZoom.set(currentImageZoom.get() * 0.5);
     }
 
@@ -174,14 +182,13 @@ public class WurstballViewerController implements Initializable {
      * toggles presentation mode
      */
     public void togglePresentationMode() {
-        //todo
-//        if (future != null && !future.isCancelled()) {
-//            pausePresentation();
-//        } else {
-//            future = EXECUTOR.scheduleAtFixedRate(() -> {
-//                Wurstball.changePic(WurstballData.getInstance().getPicFromBuffer().getImage());
-//            }, 0, 2, TimeUnit.SECONDS);
-//        }
+        if (future != null && !future.isCancelled()) {
+            pausePresentation();
+        } else {
+            future = EXECUTOR.scheduleAtFixedRate(() -> {
+                WurstballViewerController.this.randomPicture();
+            }, 0, 2, TimeUnit.SECONDS);
+        }
     }
 
     /**
@@ -196,8 +203,6 @@ public class WurstballViewerController implements Initializable {
      * save current picture to file
      */
     public void savePictureToFile() {
-        // save picture as a file
-        pausePresentation();
         LOGGER.log(Level.INFO, "Calling savePic");
         currentPic.savePic();
     }
@@ -237,10 +242,9 @@ public class WurstballViewerController implements Initializable {
      * pauses the presentatiom mode
      */
     public void pausePresentation() {
-        //todo
-        //        if (future != null && !future.isCancelled()) {
-        //            future.cancel(false);
-        //        }
+        if (future != null && !future.isCancelled()) {
+            future.cancel(false);
+        }
     }
 
     /**
