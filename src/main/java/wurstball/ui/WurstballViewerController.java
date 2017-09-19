@@ -44,8 +44,7 @@ public class WurstballViewerController implements Initializable {
 
     private static PictureElement currentPic;
     private static Clipboard clipboard;
-    public static Future future;
-    public static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
+    private static Future future;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -185,9 +184,9 @@ public class WurstballViewerController implements Initializable {
         if (future != null && !future.isCancelled()) {
             pausePresentation();
         } else {
-            future = EXECUTOR.scheduleAtFixedRate(() -> {
+            future = ThreadController.getInstance().initPresentation(() -> {
                 WurstballViewerController.this.randomPicture();
-            }, 0, 2, TimeUnit.SECONDS);
+            });
         }
     }
 

@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import org.jsoup.Jsoup;
@@ -23,9 +25,11 @@ import static wurstball.ImageLoader.THREAD_POOL_SIZE;
 public class ThreadController implements Observer {
 
     private int runningThreads = ImageLoader.THREAD_POOL_SIZE;
-
+    
+    private static final int PRESENTATION_THREADS = 1;
+    private static final long PRESENTATION_INTERVAL = 2;
     private static final ScheduledExecutorService EXECUTOR
-            = Executors.newScheduledThreadPool(THREAD_POOL_SIZE);
+            = Executors.newScheduledThreadPool(THREAD_POOL_SIZE + PRESENTATION_THREADS);
 
     private static final ThreadController INSTANCE = new ThreadController();
 
@@ -70,7 +74,6 @@ public class ThreadController implements Observer {
 
     private void checkConnection() {
         try {
-            //todo test connection
             Document doc = Jsoup.connect("http://wurstball.de/").get();
             //if still connected
             startImageLoader(ImageLoader.THREAD_POOL_SIZE - runningThreads);
@@ -82,5 +85,9 @@ public class ThreadController implements Observer {
 
     public void checkThreads() {
         this.checkConnection();
+    }
+    
+    public Future initPresentation(Runnable r) {
+        return EXECUTOR.scheduleAtFixedRate(r, 0, PRESENTATION_INTERVAL, TimeUnit.SECONDS);
     }
 }
