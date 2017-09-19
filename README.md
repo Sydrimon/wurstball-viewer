@@ -18,5 +18,3 @@ Controls:
 | `s` | save image |
 | `f` | toggle full screen mode |
 | `SPACE` | start/stop presentation mode |
-
-**Presentation Mode is currrently working in develop branch only!!**
