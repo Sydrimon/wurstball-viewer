@@ -74,7 +74,7 @@ public class ThreadController implements Observer {
 
     private void checkConnection() {
         try {
-            Document doc = Jsoup.connect("http://wurstball.de/").get();
+            Document doc = Jsoup.connect("https://ircz.de/").get();
             //if still connected
             startImageLoader(ImageLoader.THREAD_POOL_SIZE - runningThreads);
             resetRunningThreads();

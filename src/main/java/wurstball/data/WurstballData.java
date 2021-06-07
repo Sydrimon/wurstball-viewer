@@ -18,12 +18,12 @@ public class WurstballData {
 
     private static final Logger LOGGER = Logger.getLogger(WurstballData.class.getName());
 
-    public static final String ADDRESS = "http://wurstball.de/random/";
+    public static final String ADDRESS = "https://ircz.de/random/";
 
     /**
      * the tag of the picture on the website
      */
-    private static final String PIC_TAG = "div[id=content-main] > img";
+    private static final String PIC_TAG = "img#pic";
 
     private static final int MAX_RETRIES = 4;
     private static final int PREVIOUS_PIC_MAX = 10;
