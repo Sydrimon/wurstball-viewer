@@ -24,6 +24,9 @@ jobs:
           key: ${{ runner.os }}-jdk${{ matrix.java }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-jdk${{ matrix.java }}-maven-
       - name: Setup
-        run: sudo apt install -y openjfx
+        run: sudo apt install -y \
+          openjfx=8u161-b12-1ubuntu2 \
+          libopenjfx-java=8u161-b12-1ubuntu2 \
+          libopenjfx-jni=8u161-b12-1ubuntu2
       - name: Build
         run: mvn verify --batch-mode -Dmaven.javadoc.skip=true -V --no-transfer-progress
