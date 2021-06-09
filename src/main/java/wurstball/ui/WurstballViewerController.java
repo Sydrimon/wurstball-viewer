@@ -1,13 +1,5 @@
 package wurstball.ui;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
@@ -27,9 +19,12 @@ import wurstball.Wurstball;
 import wurstball.data.PictureElement;
 import wurstball.data.WurstballData;
 
-/**
- * Created by franziskah on 11.10.16.
- */
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class WurstballViewerController implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(Wurstball.class.getName());
@@ -170,7 +165,7 @@ public class WurstballViewerController implements Initializable {
 
     /**
      * @deprecated on behalf of ZoomChangeListener
-     * @param scaleValue
+     * @param scaleValue factor for scaling image
      */
     private void scaleImage(Double scaleValue) {
         imagecontainer.setScaleX(imagecontainer.getScaleX() * scaleValue);
@@ -184,9 +179,7 @@ public class WurstballViewerController implements Initializable {
         if (future != null && !future.isCancelled()) {
             pausePresentation();
         } else {
-            future = ThreadController.getInstance().initPresentation(() -> {
-                WurstballViewerController.this.randomPicture();
-            });
+            future = ThreadController.getInstance().initPresentation(WurstballViewerController.this::randomPicture);
         }
     }
 
@@ -246,22 +239,13 @@ public class WurstballViewerController implements Initializable {
         }
     }
 
-    /**
-     * Created by J. Pichardo on 10/14/16 Listener to handle zoom value changes
-     */
-    private class ZoomChangeListener implements ChangeListener {
-
+    private class ZoomChangeListener implements ChangeListener<Double> {
         @Override
-        public void changed(ObservableValue ov, Object t, Object t1) {
-
-            //Ratio of change.
-            double zoomRatio = Math.abs((double) t1 / (double) t);
-
-            //Set ImageScale
+        public void changed(ObservableValue ov, Double oldValue, Double newValue) {
+            double zoomRatio = Math.abs(newValue / oldValue);
             imagecontainer.setFitHeight(imagecontainer.getFitHeight() * zoomRatio);
             imagecontainer.setFitWidth(imagecontainer.getFitWidth() * zoomRatio);
         }
-
     }
 
 }

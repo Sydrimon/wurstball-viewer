@@ -13,7 +13,7 @@
     <top>
         <ImageView  preserveRatio="true"
                     fitHeight="30">
-            <Image url="wurstball_logo_text.png"></Image>
+            <Image url="wurstball_logo_text.png"/>
         </ImageView>
     </top>
     <center>
