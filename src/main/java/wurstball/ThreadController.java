@@ -5,6 +5,8 @@
  */
 package wurstball;
 
+import org.jsoup.Jsoup;
+
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
@@ -12,10 +14,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 import java.util.logging.Level;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import java.util.logging.Logger;
+
 import static wurstball.ImageLoader.THREAD_POOL_SIZE;
 
 /**
@@ -74,7 +75,7 @@ public class ThreadController implements Observer {
 
     private void checkConnection() {
         try {
-            Document doc = Jsoup.connect("https://ircz.de/").get();
+            Jsoup.connect("https://ircz.de/").get();
             //if still connected
             startImageLoader(ImageLoader.THREAD_POOL_SIZE - runningThreads);
             resetRunningThreads();

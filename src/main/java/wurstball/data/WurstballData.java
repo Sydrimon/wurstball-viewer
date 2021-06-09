@@ -62,8 +62,8 @@ public class WurstballData {
 
     /**
      * returns the URL of the picture from
-     * {@link wurstball.Wurstball#ADDRESS ADDRESS} with the tag
-     * {@link wurstball.Wurstball#PIC_TAG PIC_TAG}
+     * {@link wurstball.data.WurstballData#ADDRESS ADDRESS} with the tag
+     * {@link wurstball.data.WurstballData#PIC_TAG PIC_TAG}
      *
      * @return URL of the picture
      */
@@ -73,8 +73,7 @@ public class WurstballData {
                 Document doc = Jsoup.connect(ADDRESS).get();
                 Element content = doc.select(PIC_TAG).first();
 
-                String picURL = content.absUrl("src");
-                return picURL;
+                return content.absUrl("src");
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, "Bild nicht gefunden. Versuch: " + (i + 1), e);
             }
@@ -121,12 +120,10 @@ public class WurstballData {
      * @param image the picture to add to the list of the previous pictures
      */
     public void addPreviousPic(PictureElement image) {
-        if (prevPics.size() < PREVIOUS_PIC_MAX) {
-            prevPics.add(image);
-        } else {
+        if (prevPics.size() >= PREVIOUS_PIC_MAX) {
             prevPics.remove(0);
-            prevPics.add(image);
         }
+        prevPics.add(image);
         currentPicIndex = prevPics.size() - 1;
     }
 
