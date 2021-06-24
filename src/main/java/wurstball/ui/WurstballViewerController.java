@@ -2,8 +2,6 @@ package wurstball.ui;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -48,7 +46,11 @@ public class WurstballViewerController implements Initializable {
         currentImageZoom = new SimpleDoubleProperty(1);
         imagecontainer.setPreserveRatio(true);
 
-        currentImageZoom.addListener(new ZoomChangeListener());
+        currentImageZoom.addListener((observableValue, number, t1) -> {
+            double zoomRatio = Math.abs(t1.doubleValue() / number.doubleValue());
+            imagecontainer.setFitHeight(imagecontainer.getFitHeight() * zoomRatio);
+            imagecontainer.setFitWidth(imagecontainer.getFitWidth() * zoomRatio);
+        });
 
         setCurrentImage();
     }
@@ -238,14 +240,4 @@ public class WurstballViewerController implements Initializable {
             future.cancel(false);
         }
     }
-
-    private class ZoomChangeListener implements ChangeListener<Double> {
-        @Override
-        public void changed(ObservableValue ov, Double oldValue, Double newValue) {
-            double zoomRatio = Math.abs(newValue / oldValue);
-            imagecontainer.setFitHeight(imagecontainer.getFitHeight() * zoomRatio);
-            imagecontainer.setFitWidth(imagecontainer.getFitWidth() * zoomRatio);
-        }
-    }
-
 }
