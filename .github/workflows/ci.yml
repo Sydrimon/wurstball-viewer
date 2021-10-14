@@ -7,22 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 11 ]
+        java: [ 8, 11, 16 ]
     name: jdk-${{ matrix.java }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@master
-      - name: Setup jdk-${{ matrix.java }}
-        uses: actions/setup-java@master
-        with:
-          distribution: 'zulu'
-          java-version: ${{ matrix.java }}
-          java-package: jdk+fx
-      - name: Cache
-        uses: actions/cache@master
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-jdk${{ matrix.java }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-jdk${{ matrix.java }}-maven-
       - name: Build
-        run: mvn verify --batch-mode -Dmaven.javadoc.skip=true -V --no-transfer-progress
+        uses: offa/maven-action@main
+        with:
+          java-version: ${{ matrix.java }}
