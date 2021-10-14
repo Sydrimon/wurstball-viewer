@@ -21,16 +21,6 @@
                     <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
-      
-            <plugin>
-                <groupId>com.zenjava</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>8.7.0</version>
-                <configuration>
-                    <vendor>bv.wurstball</vendor>
-                    <mainClass>wurstball.Wurstball</mainClass>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>org.openjfx</groupId>
